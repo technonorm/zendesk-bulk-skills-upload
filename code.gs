@@ -19,7 +19,9 @@ function onOpen() {
  * Shows the settings panel to the user.
  */
 function showSettingsSidebar() {
-  const html = HtmlService.createHtmlOutputFromFile('Settings.html').setTitle('Uploader Settings');
+  const html = HtmlService.createHtmlOutputFromFile('Settings.html')
+    .setTitle('Uploader Settings')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
@@ -85,7 +87,53 @@ function runCreationProcess() {
  */
 function showSkillTypeSelectorDialog(skillTypes) {
     let html = `
-      <style> body { font-family: 'Roboto', sans-serif; } select { width: 100%;} .button-group { margin-top: 20px; text-align: right; } </style>
+      <style>
+        body { 
+          font-family: 'Roboto', sans-serif; 
+          padding: 20px;
+          color: #202124;
+        }
+        select { 
+          width: 100%;
+          padding: 8px;
+          border: 1px solid #dadce0;
+          border-radius: 4px;
+          font-size: 14px;
+          margin-bottom: 20px;
+          background-color: white;
+        }
+        select:focus {
+          border-color: #1a73e8;
+          outline: none;
+        }
+        .button-group { 
+          margin-top: 20px; 
+          text-align: right; 
+        }
+        button {
+          background-color: #1a73e8;
+          color: white;
+          border: none;
+          padding: 8px 24px;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        button:hover {
+          background-color: #1557b0;
+        }
+        button:disabled {
+          background-color: #dadce0;
+          cursor: not-allowed;
+        }
+        p {
+          color: #5f6368;
+          font-size: 14px;
+          margin-bottom: 16px;
+        }
+      </style>
       <p>Select the "Skill Type" you want to add skills to.</p>
       <select id="skillTypeSelect">`;
     skillTypes.forEach(skillType => {
@@ -104,11 +152,18 @@ function showSkillTypeSelectorDialog(skillTypes) {
           const selectedId = document.getElementById('skillTypeSelect').value;
           google.script.run
             .withSuccessHandler(() => google.script.host.close())
-            .withFailureHandler(err => { alert(err.message); google.script.host.close(); })
+            .withFailureHandler(err => { 
+              alert(err.message); 
+              document.querySelector('button').disabled = false;
+              document.querySelector('button').textContent = 'Create Skills';
+              google.script.host.close(); 
+            })
             .processCreation(selectedId);
         }
       </script>`;
-    const htmlOutput = HtmlService.createHtmlOutput(html).setWidth(400).setHeight(150);
+    const htmlOutput = HtmlService.createHtmlOutput(html)
+      .setWidth(400)
+      .setHeight(150);
     SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Select Zendesk Skill Type');
 }
 

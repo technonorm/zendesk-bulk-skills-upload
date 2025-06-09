@@ -2,110 +2,175 @@
 <html>
   <head>
     <base target="_top">
-    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/styles.css">
     <style>
-      /* Using Google's standard font and adding some padding */
-      body { 
-        padding: 10px; 
-        font-family: 'Roboto', sans-serif; 
+      body {
+        font-family: 'Roboto', sans-serif;
+        padding: 20px;
+        color: #202124;
       }
-      .form-group { 
-        margin-bottom: 15px; 
+      .form-group {
+        margin-bottom: 20px;
       }
-      /* Styling for the status message that appears after saving */
-      #status { 
-        margin-top: 10px; 
-        font-weight: bold; 
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #5f6368;
+        font-size: 14px;
       }
-      .success { 
-        color: #097138; /* Google's green for success */
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
       }
-      .error { 
-        color: #c21a0f; /* Google's red for errors */
+      input:focus {
+        border-color: #1a73e8;
+        outline: none;
+      }
+      .checkbox-group {
+        margin: 20px 0;
+      }
+      .checkbox-group label {
+        display: inline;
+        margin-left: 8px;
+      }
+      .button-group {
+        margin-top: 20px;
+        text-align: right;
+      }
+      button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 8px 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #1557b0;
+      }
+      button:disabled {
+        background-color: #dadce0;
+        cursor: not-allowed;
+      }
+      .error {
+        color: #d93025;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+      }
+      .success {
+        color: #0f9d58;
+        font-size: 14px;
+        margin-top: 16px;
+        display: none;
       }
     </style>
   </head>
   <body>
-    <h3>Uploader Settings</h3>
-    
     <div class="form-group">
-      <label for="subdomain">Zendesk Subdomain</label>
-      <input type="text" id="subdomain" class="form-input" placeholder="e.g., yourcompany">
-    </div>
-
-    <div class="form-group">
-      <label for="email">Zendesk Admin Email</label>
-      <input type="text" id="email" class="form-input" placeholder="e.g., admin@yourcompany.com">
-    </div>
-
-    <div class="form-group">
-      <label for="apiKey">Zendesk API Token</label>
-      <input type="password" id="apiKey" class="form-input" placeholder="Paste your API token here">
+      <label for="subdomain">Zendesk Subdomain:</label>
+      <input type="text" id="subdomain" placeholder="your-subdomain">
+      <div id="subdomainError" class="error"></div>
     </div>
     
     <div class="form-group">
-      <input type="checkbox" id="ignoreHeader">
-      <label for="ignoreHeader">First row is a header</label>
+      <label for="email">Email:</label>
+      <input type="email" id="email" placeholder="your@email.com">
+      <div id="emailError" class="error"></div>
     </div>
-
-    <button class="action" onclick="saveSettings()">Save Settings</button>
     
-    <div id="status"></div>
-
+    <div class="form-group">
+      <label for="apiKey">API Token:</label>
+      <input type="password" id="apiKey" placeholder="Your Zendesk API token">
+      <div id="apiKeyError" class="error"></div>
+    </div>
+    
+    <div class="checkbox-group">
+      <input type="checkbox" id="ignoreHeader" checked>
+      <label for="ignoreHeader">Ignore header row in spreadsheet</label>
+    </div>
+    
+    <div class="button-group">
+      <button onclick="saveSettings()">Save Settings</button>
+    </div>
+    
+    <div id="successMessage" class="success"></div>
+    
     <script>
-      // When the sidebar loads, ask the server for the currently saved settings
-      document.addEventListener('DOMContentLoaded', function() {
-        google.script.run.withSuccessHandler(function(settings) {
-          if (settings) {
-            document.getElementById('subdomain').value = settings.subdomain || '';
-            document.getElementById('email').value = settings.email || '';
-            document.getElementById('ignoreHeader').checked = settings.ignoreHeader;
-            // For security, we do not re-populate the API key field.
-          }
-        }).getSettings();
-      });
-
-      function saveSettings() {
-        var statusEl = document.getElementById('status');
-        statusEl.textContent = "Saving...";
-        statusEl.className = ''; // Reset class
-        
-        var settings = {
-          subdomain: document.getElementById('subdomain').value,
-          email: document.getElementById('email').value,
-          apiKey: document.getElementById('apiKey').value,
-          ignoreHeader: document.getElementById('ignoreHeader').checked
-        };
-
-        // Check if API key is entered, as it's not pre-filled
-        if (!settings.apiKey) {
-            // If there's an existing auth token, the user might not need to re-enter the key.
-            // But if it's the first setup, we should ask for it.
-             google.script.run.withSuccessHandler(function(existingSettings){
-                if(!existingSettings.authToken){
-                     statusEl.textContent = "Please enter an API Token.";
-                     statusEl.className = 'error';
-                } else {
-                     // If a token already exists, an empty API field means "don't change the token"
-                     save(settings, statusEl);
-                }
-             }).getSettings();
-        } else {
-            save(settings, statusEl);
+      // Load saved settings when the page loads
+      google.script.run.withSuccessHandler(loadSettings).getSettings();
+      
+      function loadSettings(settings) {
+        if (settings) {
+          document.getElementById('subdomain').value = settings.subdomain || '';
+          document.getElementById('email').value = settings.email || '';
+          document.getElementById('ignoreHeader').checked = settings.ignoreHeader !== false;
         }
       }
-
-      function save(settings, statusEl){
-         google.script.run.withSuccessHandler(function(response) {
-            statusEl.textContent = response;
-            statusEl.className = 'success';
-            // Clear the API key field after a successful save
-            document.getElementById('apiKey').value = ''; 
-            setTimeout(function(){ statusEl.textContent = ''; }, 4000);
-        }).withFailureHandler(function(err){
-            statusEl.textContent = "Error: " + err.message;
-            statusEl.className = 'error';
-        }).saveSettings(settings);
+      
+      function saveSettings() {
+        const button = document.querySelector('button');
+        const successMessage = document.getElementById('successMessage');
+        const errorElements = document.getElementsByClassName('error');
+        
+        // Reset error states
+        Array.from(errorElements).forEach(el => el.style.display = 'none');
+        successMessage.style.display = 'none';
+        
+        // Get form values
+        const settings = {
+          subdomain: document.getElementById('subdomain').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          apiKey: document.getElementById('apiKey').value.trim(),
+          ignoreHeader: document.getElementById('ignoreHeader').checked
+        };
+        
+        // Validate
+        let hasError = false;
+        if (!settings.subdomain) {
+          document.getElementById('subdomainError').textContent = 'Subdomain is required';
+          document.getElementById('subdomainError').style.display = 'block';
+          hasError = true;
+        }
+        if (!settings.email) {
+          document.getElementById('emailError').textContent = 'Email is required';
+          document.getElementById('emailError').style.display = 'block';
+          hasError = true;
+        }
+        if (!settings.apiKey) {
+          document.getElementById('apiKeyError').textContent = 'API Token is required';
+          document.getElementById('apiKeyError').style.display = 'block';
+          hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        // Disable button and show loading state
+        button.disabled = true;
+        button.textContent = 'Saving...';
+        
+        // Save settings
+        google.script.run
+          .withSuccessHandler(function(response) {
+            successMessage.textContent = response;
+            successMessage.style.display = 'block';
+            button.textContent = 'Save Settings';
+            button.disabled = false;
+          })
+          .withFailureHandler(function(error) {
+            alert(error.message);
+            button.textContent = 'Save Settings';
+            button.disabled = false;
+          })
+          .saveSettings(settings);
       }
     </script>
   </body>
