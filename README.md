@@ -33,7 +33,7 @@ Follow these steps to get the tool working in your own Google Account. This shou
 ### 1. Make a Copy of the Google Sheet
 First, open the master Google Sheet and make your own copy. The sheet is read-only, so making a copy is required.
 
-* **[Click here to get your copy of the Google Sheet]([https://docs.google.com/spreadsheets/d/1ejAFJaHDIOkXEvMPU3IlIs6iBUHwLJxD5e_bdQsW5I4/edit?usp=sharing])**
+* **[Click here to get your copy of the Google Sheet](https://docs.google.com/spreadsheets/d/1ejAFJaHDIOkXEvMPU3IlIs6iBUHwLJxD5e_bdQsW5I4/edit?usp=sharing)**
 * Click the **"Make a copy"** button. The new sheet will be saved in your own Google Drive.
 
 ### 2. Configure Your Settings
@@ -51,7 +51,7 @@ The first time you run the script, Google will ask for your permission. This is 
 1.  Click **Zendesk Bulk Uploader > Create Skills**.
 2.  A dialog titled "Authorization Required" will appear. Click **"Continue"**.
 3.  Choose your Google account.
-4.  You will see a screen that says **"Google hasn’t verified this app"**. This is expected. Click the small **"Advanced"** link.
+4.  You will see a screen that says **"Google hasn't verified this app"**. This is expected. Click the small **"Advanced"** link.
 5.  Click on the link at the bottom that says **"Go to [Project Name] (unsafe)"**.
 6.  Review the permissions the script needs and click **"Allow"**.
 
