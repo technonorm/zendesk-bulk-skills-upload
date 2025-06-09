@@ -2,9 +2,17 @@
 const STATUS_COLUMN_HEADER = 'Upload Status';
 
 /**
+ * Suppresses the default script execution toast
+ */
+function suppressToast() {
+  SpreadsheetApp.getActiveSpreadsheet().toast('', 0);
+}
+
+/**
  * Runs when the spreadsheet is opened. Adds a custom menu to the UI. 
  */
 function onOpen() {
+  suppressToast();
   SpreadsheetApp.getUi()
     .createMenu('Zendesk Bulk Uploader')
     .addItem('Create Skills', 'runCreationProcess')
@@ -19,6 +27,7 @@ function onOpen() {
  * Shows the settings panel to the user.
  */
 function showSettingsSidebar() {
+  suppressToast();
   const html = HtmlService.createHtmlOutputFromFile('Settings.html')
     .setTitle('Uploader Settings')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
@@ -67,6 +76,7 @@ function saveSettings(settings) {
  * Main function to start the skill creation process.
  */
 function runCreationProcess() {
+  suppressToast();
   const settings = getSettings();
   if (!settings.authToken) {
     SpreadsheetApp.getUi().alert('Settings not found. Please configure the script under "Zendesk Bulk Uploader" > "Settings" first.');
@@ -268,6 +278,7 @@ function processCreation(selectedSkillTypeId) {
  * Shows the dialog for creating a new skill type (attribute).
  */
 function showCreateSkillTypeDialog() {
+  suppressToast();
   const settings = getSettings();
   if (!settings.authToken) {
     SpreadsheetApp.getUi().alert('Settings not found. Please configure the script under "Zendesk Bulk Uploader" > "Settings" first.');
