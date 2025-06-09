@@ -33,7 +33,7 @@ Follow these steps to get the tool working in your own Google Account. This shou
 ### 1. Make a Copy of the Google Sheet
 First, open the master Google Sheet and make your own copy. The sheet is read-only, so making a copy is required.
 
-* **[Click here to get your copy of the Google Sheet](https://docs.google.com/spreadsheets/d/1ejAFJaHDIOkXEvMPU3IlIs6iBUHwLJxD5e_bdQsW5I4/edit?usp=sharing)**
+* **<a href="https://docs.google.com/spreadsheets/d/1ejAFJaHDIOkXEvMPU3IlIs6iBUHwLJxD5e_bdQsW5I4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Click here to get your copy of the Google Sheet</a>**
 * Click the **"Make a copy"** button. The new sheet will be saved in your own Google Drive.
 
 ### 2. Configure Your Settings
