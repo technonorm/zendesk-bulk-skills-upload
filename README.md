@@ -2,8 +2,6 @@
 
 This Google Apps Script provides a user-friendly tool within a Google Sheet to bulk create skill attributes (e.g., countries, languages, products) in your Zendesk instance. It's designed for Zendesk administrators who need to add many attribute values without tedious manual entry.
 
-![Demo Screenshot](https://i.imgur.com/mO3hVFR.gif)
-
 ---
 
 ## Features
@@ -16,13 +14,26 @@ This Google Apps Script provides a user-friendly tool within a Google Sheet to b
 
 ---
 
+## Important: About Zendesk Skill Limits
+
+Before you begin, it's important to be aware of the default limitations on skills within Zendesk. This tool can help you add skills quickly, but it cannot bypass Zendesk's platform limits.
+
+* **Standard Limit:** By default, Zendesk accounts are typically limited to **10 skill types**, with a maximum of **30 skills per type** (for a total of 300 skills).
+
+* **Requesting an Increase:** If you require more skills, you can contact Zendesk Support to request an increase. They can often raise the allowance significantly, up to **1,000 skills per skill type**, for a potential total of 10,000 skills across your account.
+
+I recommend checking your current usage and future needs before performing a very large upload.
+
+---
+
 ## Setup Instructions
 
 Follow these steps to get the tool working in your own Google Account. This should take less than 5 minutes.
 
 ### 1. Make a Copy of the Google Sheet
-First, open the master Google Sheet and make your own copy:
-* **[Click here to get your copy of the Google Sheet](https://docs.google.com/spreadsheets/d/1aBcDeFgHiJkLmNoPqRsTuVwXyZaBcDeFgHiJkLmNoPq/copy)** (Replace this with the actual share link of your template sheet, set to "Anyone with the link can view" and force a copy)
+First, open the master Google Sheet and make your own copy. The sheet is read-only, so making a copy is required.
+
+* **[Click here to get your copy of the Google Sheet]([https://docs.google.com/spreadsheets/d/1ejAFJaHDIOkXEvMPU3IlIs6iBUHwLJxD5e_bdQsW5I4/edit?usp=sharing])**
 * Click the **"Make a copy"** button. The new sheet will be saved in your own Google Drive.
 
 ### 2. Configure Your Settings
@@ -78,4 +89,4 @@ This process ensures that you are always in control and no malicious code can be
 
 ## Disclaimer
 
-This tool is not an official product of Zendesk or Google. It is an open-source project created to help the Zendesk administrator community. Use at your own risk.
+This tool is not an official product of Zendesk. It is an open-source project created by me to help the Zendesk administrator community. Use at your own risk.
