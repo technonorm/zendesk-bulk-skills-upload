@@ -1,7 +1,5 @@
 # Zendesk Bulk Uploader for Google Sheets
 
-Testing clasp integration to ensure that all pushes to Master are also pushed to the sheet via clasp
-
 This Google Apps Script provides a user-friendly tool within a Google Sheet to bulk create skill attributes (e.g., countries, languages, products) in your Zendesk instance. It's designed for Zendesk administrators who need to add many attribute values without tedious manual entry.
 
 ---
