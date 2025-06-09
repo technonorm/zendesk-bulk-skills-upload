@@ -2,12 +2,14 @@
 const STATUS_COLUMN_HEADER = 'Upload Status';
 
 /**
- * Runs when the spreadsheet is opened. Adds a custom menu to the UI.
+ * Runs when the spreadsheet is opened. Adds a custom menu to the UI. 
  */
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Zendesk Bulk Uploader')
     .addItem('Create Skills', 'runCreationProcess')
+    .addSeparator()
+    .addItem('Create New Skill Type', 'showCreateSkillTypeDialog')
     .addSeparator()
     .addItem('Settings', 'showSettingsSidebar')
     .addToUi();
@@ -205,4 +207,119 @@ function processCreation(selectedSkillTypeId) {
   });
 
   SpreadsheetApp.getUi().alert(`Process finished. Success: ${successCount}. Failed: ${failCount}.`);
+}
+
+/**
+ * Shows the dialog for creating a new skill type (attribute).
+ */
+function showCreateSkillTypeDialog() {
+  const settings = getSettings();
+  if (!settings.authToken) {
+    SpreadsheetApp.getUi().alert('Settings not found. Please configure the script under "Zendesk Bulk Uploader" > "Settings" first.');
+    return;
+  }
+
+  const html = HtmlService.createHtmlOutput(`
+    <style>
+      body { font-family: 'Roboto', sans-serif; padding: 20px; }
+      .input-group { margin-bottom: 15px; }
+      label { display: block; margin-bottom: 5px; }
+      input { width: 100%; padding: 8px; box-sizing: border-box; }
+      .button-group { margin-top: 20px; text-align: right; }
+      .error { color: #d93025; margin-top: 5px; display: none; }
+    </style>
+    <div class="input-group">
+      <label for="attributeName">Skill Type Name:</label>
+      <input type="text" id="attributeName" placeholder="Enter the name of the new skill type">
+      <div id="error" class="error"></div>
+    </div>
+    <div class="button-group">
+      <button onclick="createSkillType()">Create Skill Type</button>
+    </div>
+    <script>
+      function createSkillType() {
+        const nameInput = document.getElementById('attributeName');
+        const errorDiv = document.getElementById('error');
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+          errorDiv.textContent = 'Please enter a name for the skill type';
+          errorDiv.style.display = 'block';
+          return;
+        }
+        
+        document.querySelector('button').disabled = true;
+        document.querySelector('button').textContent = 'Creating...';
+        
+        google.script.run
+          .withSuccessHandler(() => {
+            google.script.host.close();
+            google.script.run.showSuccessMessage();
+          })
+          .withFailureHandler((error) => {
+            errorDiv.textContent = error.message || 'An error occurred while creating the skill type';
+            errorDiv.style.display = 'block';
+            document.querySelector('button').disabled = false;
+            document.querySelector('button').textContent = 'Create Skill Type';
+          })
+          .createSkillType(name);
+      }
+    </script>
+  `)
+  .setWidth(400)
+  .setHeight(200);
+  
+  SpreadsheetApp.getUi().showModalDialog(html, 'Create New Skill Type');
+}
+
+/**
+ * Creates a new skill type (attribute) in Zendesk.
+ * @param {string} name The name of the new skill type.
+ */
+function createSkillType(name) {
+  const settings = getSettings();
+  const endpoint = `https://${settings.subdomain}.zendesk.com/api/v2/routing/attributes`;
+  
+  const options = {
+    method: 'post',
+    headers: {
+      'Authorization': 'Basic ' + settings.authToken,
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify({
+      attribute: {
+        name: name
+      }
+    }),
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(endpoint, options);
+    const responseCode = response.getResponseCode();
+    
+    if (responseCode === 201) {
+      return true;
+    } else {
+      const error = JSON.parse(response.getContentText());
+      if (responseCode === 422) {
+        throw new Error('A skill type with this name already exists. Please choose a different name.');
+      } else if (responseCode === 401) {
+        throw new Error('Authentication failed. Please check your Zendesk credentials in Settings.');
+      } else if (responseCode === 403) {
+        throw new Error('You do not have permission to create skill types. Please check your Zendesk permissions.');
+      } else {
+        throw new Error(`Failed to create skill type. Zendesk responded with code ${responseCode}.`);
+      }
+    }
+  } catch (e) {
+    throw new Error(e.message || 'An unexpected error occurred while creating the skill type.');
+  }
+}
+
+/**
+ * Shows a success message after creating a skill type.
+ */
+function showSuccessMessage() {
+  SpreadsheetApp.getUi().alert('Skill type created successfully! You can now use it to create skills.');
 }
