@@ -221,12 +221,60 @@ function showCreateSkillTypeDialog() {
 
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: 'Roboto', sans-serif; padding: 20px; }
-      .input-group { margin-bottom: 15px; }
-      label { display: block; margin-bottom: 5px; }
-      input { width: 100%; padding: 8px; box-sizing: border-box; }
-      .button-group { margin-top: 20px; text-align: right; }
-      .error { color: #d93025; margin-top: 5px; display: none; }
+      body { 
+        font-family: 'Roboto', sans-serif; 
+        padding: 20px;
+        color: #202124;
+      }
+      .input-group { 
+        margin-bottom: 15px; 
+      }
+      label { 
+        display: block; 
+        margin-bottom: 5px;
+        color: #5f6368;
+        font-size: 14px;
+      }
+      input { 
+        width: 100%; 
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      input:focus {
+        border-color: #1a73e8;
+        outline: none;
+      }
+      .button-group { 
+        margin-top: 20px; 
+        text-align: right; 
+      }
+      .error { 
+        color: #d93025; 
+        margin-top: 5px; 
+        display: none;
+        font-size: 12px;
+      }
+      button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 8px 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #1557b0;
+      }
+      button:disabled {
+        background-color: #dadce0;
+        cursor: not-allowed;
+      }
     </style>
     <div class="input-group">
       <label for="attributeName">Skill Type Name:</label>
